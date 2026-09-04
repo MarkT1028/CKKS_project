@@ -11,3 +11,8 @@ ckks_rns_mac/clockInfo.txt
 ckks_rns_mac/dfx_runtime.txt
 ckks_rns_mac/vivado_ooc_run.log
 
+# Local OpenFHE builds and generated ciphertext vectors
+openfhe_host/build/
+vectors/*.bin
+vectors/*.json
+!vectors/README.md
