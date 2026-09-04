@@ -1,0 +1,13 @@
+# Codex/slide generation scratch data
+.codex-slide-build/
+
+# AMD Vitis HLS / Vivado generated outputs
+ckks_rns_mac/.Xil/
+ckks_rns_mac/build/
+ckks_rns_mac/logs/
+ckks_rns_mac/vivado_ooc/
+ckks_rns_mac/-p/
+ckks_rns_mac/clockInfo.txt
+ckks_rns_mac/dfx_runtime.txt
+ckks_rns_mac/vivado_ooc_run.log
+
