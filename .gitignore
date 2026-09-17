@@ -11,8 +11,17 @@ ckks_rns_mac/clockInfo.txt
 ckks_rns_mac/dfx_runtime.txt
 ckks_rns_mac/vivado_ooc_run.log
 
+# Complete ciphertext-multiply HLS batch build
+ckks_ciphertext_mult/.Xil/
+ckks_ciphertext_mult/build/
+ckks_ciphertext_mult/build_openfhe_vector*/
+ckks_ciphertext_mult/logs/
+ckks_ciphertext_mult/clockInfo.txt
+ckks_ciphertext_mult/dfx_runtime.txt
+
 # Local OpenFHE builds and generated ciphertext vectors
 openfhe_host/build/
+openfhe_host/build_ckks_mult*/
 vectors/*.bin
 vectors/*.json
 !vectors/README.md

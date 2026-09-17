@@ -1,0 +1,3 @@
+*.h
+!openfhe_ciphertext_mult_data.h
+!.gitignore

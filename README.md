@@ -1,7 +1,6 @@
 # CKKS_project
 
-VEK280 proof-of-concept for accelerating the RNS modular arithmetic beneath
-OpenFHE CKKS ciphertext multiplication.
+VEK280 HLS development for OpenFHE CKKS ciphertext multiplication.
 
 ## Repository layout
 
@@ -9,10 +8,14 @@ OpenFHE CKKS ciphertext multiplication.
 - `openfhe_host/`: OpenFHE v1.5.1 C++ ciphertext-tower exporter
 - `common/`: versioned host/HLS-testbench vector file format
 - `vectors/`: generated local test-vector destination
+- `ckks_ciphertext_mult/src/`: current fused ciphertext-multiply kernel
+- `ckks_ciphertext_mult/tb/`: multi-tower bit-exact testbench
+- `ckks_ciphertext_mult/README.md`: security boundary, layout, and results
 
-The FPGA kernel does not link OpenFHE. OpenFHE runs on the host, extracts one
-55-bit evaluation-format DCRT tower, and writes canonical `uint64_t` residues.
-The HLS kernel reads those residues and evaluates:
+The FPGA kernels do not link OpenFHE.  OpenFHE stays on the trusted PC; the
+VEK280 datapath receives only canonical ciphertext residues and public RNS
+parameters.  The existing legacy exporter still produces this earlier
+one-tower MAC vector:
 
 ```text
 out[i] = (acc[i] + a[i] * b[i]) mod q, i=0..8191
@@ -21,7 +24,38 @@ out[i] = (acc[i] + a[i] * b[i]) mod q, i=0..8191
 See `openfhe_host/README.md` for ciphertext export and
 `ckks_rns_mac/README.md` for HLS simulation.
 
-## Current milestone
+## Current ciphertext-multiply milestone
+
+The current top function is `ckks_ciphertext_mult`.  For fresh two-component
+evaluation-format ciphertexts `A=(a0,a1)` and `B=(b0,b1)`, it processes all
+active towers supplied by the host and emits the complete three-component raw
+product:
+
+```text
+d0 = a0*b0 mod q
+d1 = a0*b1 + a1*b0 mod q
+d2 = a1*b1 mod q
+```
+
+Inputs are packed as one 128-bit `{c1,c0}` word per tower/coefficient and the
+output is one 256-bit `{reserved,d2,d1,d0}` word.  The core supports ring
+dimension 8192, up to 16 towers, and public moduli in `[2^48,2^60)`.
+
+The trusted PC owns OpenFHE KeyGen, Encode, Encrypt, and final Decrypt.  The
+VEK280 receives only ciphertext residues and public RNS parameters.  The
+secret key never enters the board.
+
+Run the complete HLS regression with:
+
+```powershell
+cd ckks_ciphertext_mult
+E:\AMDDesignTools\2025.2\Vitis\bin\vitis-run.bat --mode hls --tcl run_hls.tcl
+```
+
+The legacy one-tower proof-of-concept remains under `ckks_rns_mac/` as a
+known-good arithmetic baseline.
+
+## Legacy one-tower milestone
 
 The host-to-HLS path has been validated with OpenFHE v1.5.1:
 
